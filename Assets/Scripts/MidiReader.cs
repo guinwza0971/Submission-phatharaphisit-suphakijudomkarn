@@ -9,34 +9,32 @@ using UnityEngine.SceneManagement;
 
 public class MidiReader : MonoBehaviour
 {
-    public static MidiReader Instance;
+    public static MidiReader Instance; //This script allows access to this class from other class
 
-    ///Simple Game manager///
-    bool gameStart = false;
-    public bool audioSourceStart = false; 
+    bool gameStart = false; //Use this to detect begining of main game loop
+    public bool audioSourceStart = false; //Use this bool to detect if the music already start
 
-    [SerializeField] TMPro.TextMeshProUGUI startText;
-    ////////////////////////
+    [SerializeField] TMPro.TextMeshProUGUI startText; //The "Press space to start" text
 
-    [SerializeField] string fileLocation;
+    [SerializeField] string fileLocation; //Location of drum.mid and the midi file should stored in "Streaming Assets" Folder
     
-    [SerializeField] Lanes[] lanes;
+    [SerializeField] Lanes[] lanes; //The lanes is use for managing note properties and behavior and player gameplay input
 
     //public static MidiFile midiFile;
 
-    [SerializeField] MidiFile midiFile;
-    [SerializeField] AudioSource audioSource;
-    [SerializeField] AudioSource hiddenAudioSource;
+    [SerializeField] MidiFile midiFile;//this variable stores midifile data from midifile reading function
+    [SerializeField] AudioSource audioSource; //this is for the music that play
+    [SerializeField] AudioSource hiddenAudioSource; // the same audiosource but this audiosource must have volume = 0 and only use as timer for note spawner
     
 
-    public float songDelayInSeconds;
-    public float noteSpawnTime;
+    public float songDelayInSeconds; //The delay time between spawning first note and begin playing music
+    public float noteSpawnTime; //The delay time between initializing the game after pressing start and begin spawning first note
 
-    public double marginOfError;
-    public double inputDelay;
+    public double marginOfError; //This would allow player to play the game easier because it is not probable that player could tap at exact milisec that the note plays
+    public double inputDelay; //This isn't use in this current project, but it would be neccessary to consider input delay to prevent player from feeling out of sync with the song
 
-    [SerializeField] float delayAfterSongEnd = 1.5f;
-    float songEndDelay = 0;
+    [SerializeField] float delayAfterSongEnd = 1.5f; //After the song end, this is the cooldown time before let player press space to start game again
+    float songEndDelay = 0; //This will work in tendem with "delayAfterSongEnd" to measure the time after song end.
     //public bool songEnded = false;
 
     void Start()
@@ -46,20 +44,20 @@ public class MidiReader : MonoBehaviour
 
     void Update()
     {
-        if(!gameStart && Input.GetKeyDown("space"))
+        if(!gameStart && Input.GetKeyDown("space"))// Player need to press space to start the game loop
         {
             if (fileLocation != null)
-            ReadMidiFile();
+            ReadMidiFile(); //This script start the sequence of the game loop
             else
             Debug.LogError("Please add midifile into the MidiReader component of songmanager gameobject.");
 
-            startText.text = "";
-            gameStart = true;
+            startText.text = ""; // must erase the "Press space to start" Text because it would obstruct player sight.
+            gameStart = true; //This if start the script that lead to begining the game loop so this should be set to true to indicate game start state
         }
 
-        if(audioSourceStart && !audioSource.isPlaying)
+        if(audioSourceStart && !audioSource.isPlaying) //Indicate ending of the song
         {
-            songEndDelay += Time.deltaTime;
+            songEndDelay += Time.deltaTime; //Run the timer
             if(songEndDelay > delayAfterSongEnd)
             {
                 Restart();
@@ -70,7 +68,7 @@ public class MidiReader : MonoBehaviour
     //Read the midifile into the game
     void ReadMidiFile()
     {
-        midiFile = MidiFile.Read(Application.streamingAssetsPath + "/" + fileLocation);
+        midiFile = MidiFile.Read(Application.streamingAssetsPath + "/" + fileLocation); 
 
         if (midiFile != null)
         {
