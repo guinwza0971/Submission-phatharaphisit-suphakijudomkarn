@@ -50,8 +50,10 @@ public class MidiReader : MonoBehaviour
             ReadMidiFile(); //This script start the sequence of the game loop
             else
             Debug.LogError("Please add midifile into the MidiReader component of songmanager gameobject.");
-
+            
+            if (startText != null)
             startText.text = ""; // must erase the "Press space to start" Text because it would obstruct player sight.
+            
             gameStart = true; //This if start the script that lead to begining the game loop so this should be set to true to indicate game start state
         }
 
@@ -129,7 +131,12 @@ public class MidiReader : MonoBehaviour
 
     public void Restart()
     {
-        PlayerPrefs.SetInt("highScore", ScoreManager.score);
+        var prevHighScore = 0;
+
+        if(PlayerPrefs.GetInt("highScore") != 0)
+        prevHighScore = PlayerPrefs.GetInt("highScore");
+
+        PlayerPrefs.SetInt("highScore", Mathf.Max(ScoreManager.score,prevHighScore));
         ScoreManager.score = 0;
         SceneManager.LoadScene(0);
         /*songEndTimer = 0;

@@ -47,16 +47,17 @@ public class Lanes : MonoBehaviour
     void Start()
     {
         noteIndicator = GameObject.FindWithTag("NoteIndicator");
+
+        if(GameObject.FindWithTag("MidiReader") != null)
+        {
         midireader = GameObject.FindWithTag("MidiReader").GetComponent<MidiReader>();
         noteTravelTime = midireader.songDelayInSeconds; //MidiReader.Instance.songDelayInSeconds;
-        noteTravelDistance = noteSpeed * noteTravelTime;
+        }
 
-        spawnPosition = new Vector3(target.transform.position.x, noteIndicator.transform.position.y, target.transform.position.z) 
-            + new Vector3(0,noteTravelDistance,0);
-
+        spawnPosition = GetSpawnLocation(noteIndicator,noteTravelTime,noteSpeed);
         noteLifeSpan = 2*noteTravelTime;
         myLaneInputText = input.ToString();
-        Debug.Log("My input is " + myLaneInputText);
+        //Debug.Log("My input is " + myLaneInputText);
     }
 
     public void SetTimeStamps(Melanchall.DryWetMidi.Core.MidiFile midiFile, Melanchall.DryWetMidi.Interaction.Note[] noteArray) 
@@ -97,11 +98,7 @@ public class Lanes : MonoBehaviour
         {
             if (MidiReader.GetHiddenAudioSourcePlayBackTime() > timeStamps[noteSpawnIndex] )
             {
-                Debug.Log("Spawning note at " + (timeStamps[noteSpawnIndex]));
-                var note = Instantiate(notePrefab, spawnPosition, Quaternion.identity);
-                spawnedNotes.Add(note.GetComponent<Note>());
-                note.GetComponent<Note>().Spawn(noteColor, noteSpeed, noteLifeSpan);
-                noteSpawnIndex++;
+                SpawningTheNotes();
             }
         }
         //timeStamps variable will be use to determine 1.the time that player need to tap to get a score 2.the time that this lane spawn a note
@@ -144,5 +141,21 @@ public class Lanes : MonoBehaviour
 
     }
 
+    public Vector3 GetSpawnLocation(GameObject indicator, float travelTime, float speed )
+    {
+        noteTravelDistance = speed * travelTime;
+        var spawnVector = new Vector3(transform.position.x, indicator.transform.position.y, transform.position.z) 
+            + new Vector3(0,noteTravelDistance,0);
 
+        return spawnVector;
+    }
+
+    void SpawningTheNotes()
+    {
+        //Debug.Log("Spawning note at " + (timeStamps[noteSpawnIndex]));
+        var note = Instantiate(notePrefab, spawnPosition, Quaternion.identity);
+        spawnedNotes.Add(note.GetComponent<Note>());
+        note.GetComponent<Note>().Spawn(noteColor, noteSpeed, noteLifeSpan);
+        noteSpawnIndex++;
+    }
 }

@@ -1,18 +1,13 @@
 {
-    "name": "Tests",
+    "name": "Playmode",
     "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner"
+        "UnityEditor.TestRunner",
+        "Script",
+        "Unity.TextMeshPro"
     ],
-    "includePlatforms": [
-        "Editor",
-        "LinuxStandalone64",
-        "macOSStandalone",
-        "WebGL",
-        "WindowsStandalone32",
-        "WindowsStandalone64"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
